@@ -32,11 +32,14 @@ O estudo é importante para evidenciar desigualdades e a sub-representação no 
 variaveis que faltaram, o que o modelo nao consegue responder.]
 
 ## O grupo
-[Nomes e links do LinkedIn de cada integrante]
-Ana Bezerra - www.linkedin.com/in/ana-almeida-ti/
-Isadora de Oliveira Silva - https://www.linkedin.com/in/isadora-de-oliveira-silva-496954164?utm_source=share_via&utm_content=profile&utm_medium=member_ios
-Jaqueline Martins Duarte - https://www.linkedin.com/in/jaquilenemartins?utm_source=share_via&utm_content=profile&utm_medium=member_android
-Bernardo Akin Chiusoli Mendes - linkedin.com/in/bernardochiusoli
+
+Ana Bezerra - [LinkedIn](https://www.linkedin.com/in/ana-almeida-ti/)
+
+Isadora de Oliveira Silva - [LinkedIn](https://www.linkedin.com/in/isadora-de-oliveira-silva-496954164)
+
+Jaqueline Martins Duarte - [LinkedIn](https://www.linkedin.com/in/jaquilenemartins)
+
+Bernardo Akin Chiusoli Mendes - [LinkedIn](https://www.linkedin.com/in/bernardochiusoli)
 
 
 ## Como rodar
