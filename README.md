@@ -41,6 +41,13 @@ Jaqueline Martins Duarte - [LinkedIn](https://www.linkedin.com/in/jaquilenemarti
 
 Bernardo Akin Chiusoli Mendes - [LinkedIn](https://www.linkedin.com/in/bernardochiusoli)
 
+Victoria Paixão - [LinkedIn]((https://www.linkedin.com/in/bernardochiusoli))
+
+Lorena - [LinkedIn](([https://www.linkedin.com/in/bernardochiusoli](https://www.linkedin.com/in/lorena-g-a67978124?utm_source=share_via&utm_content=profile&utm_medium=member_android)))
+
+
+Roberta -  [LinkedIn](([https://www.linkedin.com/in/bernardochiusoli](https://www.linkedin.com/in/roberta-bueno-de-souza-algarves-8226b8173?utm_source=share_via&utm_content=profile&utm_medium=member_ios)))
+
 
 ## Como rodar
 1. Abra `notebook/01_analise_completa.ipynb` no Google Colab
