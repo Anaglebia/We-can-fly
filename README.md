@@ -39,7 +39,7 @@ Isadora de Oliveira Silva - [LinkedIn](https://www.linkedin.com/in/isadora-de-ol
 
 Jaqueline Martins Duarte - [LinkedIn](https://www.linkedin.com/in/jaquilenemartins)
 
-Bernardo Akin Chiusoli Mendes - [LinkedIn](https://www.linkedin.com/in/bernardochiusoli)
+Bernardo Chiusoli - [LinkedIn](https://www.linkedin.com/in/bernardochiusoli)
 
 Victoria Paixão - [LinkedIn](https://www.linkedin.com/in/bernardochiusoli)
 
