@@ -11,7 +11,7 @@ Analisamos as diferenças de remuneração entre grupos sociais.
 O estudo é importante para evidenciar desigualdades e a sub-representação no mercado de trabalho
 
 ## Os dados
-- Fonte: [nome e link da base]
+- Fonte: [[Rendimento médio mensal (R$) do trabalho principal segundo posição da ocupação com contribuição para a Previdência Social por sexo e raça/cor, Fonte:  (PNAD) e da Pesquisa Nacional por Amostra de Domicílios Contínua (PNAD Contínua) do IBGE, recorte, período 2022].]
 - Recorte: [periodo, regiao, filtros aplicados]
 - Amostra neste repositorio: [X linhas, so para o codigo rodar]
 - Como reproduzir: [ver dados/FONTE.md]
@@ -41,12 +41,11 @@ Jaqueline Martins Duarte - [LinkedIn](https://www.linkedin.com/in/jaquilenemarti
 
 Bernardo Akin Chiusoli Mendes - [LinkedIn](https://www.linkedin.com/in/bernardochiusoli)
 
-Victoria Paixão - [LinkedIn]((https://www.linkedin.com/in/bernardochiusoli))
+Victoria Paixão - [LinkedIn](https://www.linkedin.com/in/bernardochiusoli)
 
-Lorena - [LinkedIn](([https://www.linkedin.com/in/bernardochiusoli](https://www.linkedin.com/in/lorena-g-a67978124?utm_source=share_via&utm_content=profile&utm_medium=member_android)))
+Lorena - [LinkedIn](https://www.linkedin.com/in/lorena-g-a67978124)
 
-
-Roberta -  [LinkedIn](([https://www.linkedin.com/in/bernardochiusoli](https://www.linkedin.com/in/roberta-bueno-de-souza-algarves-8226b8173?utm_source=share_via&utm_content=profile&utm_medium=member_ios)))
+Roberta - [LinkedIn](https://www.linkedin.com/in/roberta-bueno-de-souza-algarves-8226b8173)
 
 
 ## Como rodar
