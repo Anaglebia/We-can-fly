@@ -25,11 +25,16 @@ O estudo é importante para evidenciar desigualdades e a sub-representação no 
 - [terceiro achado]
 
 ## O prototipo
-[Link do GitHub Pages] - [uma frase sobre o que a tela faz]
+[[Link do GitHub Pages](https://anaglebia.github.io/We-can-fly/)] - 
+
+Este simulador interativo expõe o viés salarial do mercado ao demonstrar visualmente como gênero e raça alteram drasticamente a renda prevista pela PNAD Contínua para perfis profissionais idênticos.
 
 ## Limitacoes
-[Seja honesta aqui. Banca gosta. Ex.: amostra, vies da base,
-variaveis que faltaram, o que o modelo nao consegue responder.]
+⚠️ 1. Limitações do Modelo Estatístico (Isolamento de Variáveis)Efeito "Ceteris Paribus" Artificial: Na realidade, gênero e raça moldam as oportunidades de vida desde a infância. Ao travar idade e escolaridade, o modelo assume que uma mulher negra e um homem branco chegam ao mercado com as mesmas trajetórias, o que ignora o racismo e o machismo estruturais prévios ao emprego.Variáveis Omitidas: A PNAD não captura dados cruciais que impactam a renda, como produtividade individual, soft skills, redes de contatos (networking) e o prestígio da instituição onde a pessoa estudou.
+
+📊 2. Limitações da Base de Dados (PNAD Contínua)Informalidade e Subdeclaração: Trabalhadores informais ou autônomos tendem a flutuar ou subdeclarar seus rendimentos na pesquisa, reduzindo a precisão do modelo para esses grupos.Super-ricos Subrepresentados: A PNAD é uma pesquisa domiciliar por amostragem e costuma não capturar os rendimentos do topo da pirâmide financeira (o 1% mais rico), onde a disparidade de gênero e raça pode ser ainda mais extrema.Falta de Dados Setoriais Específicos: A pesquisa traz grandes recortes (ex: "Indústria", "Comércio"), mas não diferencia se a pessoa é desenvolvedora de software ou assistente de TI, o que distorce a previsão para profissões de nicho.
+
+💡 3. Limitações de Interpretação (Viés vs. Discriminação)Correlação não é Causalidade: O modelo aponta que o gênero e a raça estão associados a uma renda menor, mas ele não consegue explicar o motivo exato (se é discriminação direta do chefe, penalidade pela maternidade, ou barreiras de entrada em setores que pagam mais).Segregação Ocupacional Oculta: O modelo pode sugerir um viés puro na canetada do salário, quando na verdade parte da diferença ocorre porque mulheres e pessoas negras são empurradas para profissões historicamente menos valorizadas e pior pagas.
 
 ## O grupo
 
