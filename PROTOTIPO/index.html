@@ -4,8 +4,438 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>We Can Fly</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --papel:#EDEEE7;
+    --papel-alt:#E3E5DB;
+    --tinta:#1B2320;
+    --tinta-suave:#5B615A;
+    --linha:#C7CABD;
+    --perfil-a:#2F6F52;
+    --perfil-a-fundo:#E1EBE3;
+    --perfil-b:#A8442A;
+    --perfil-b-fundo:#F1E2DC;
+    --lacuna:#C08A22;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--papel);
+    color:var(--tinta);
+    font-family:'Inter',sans-serif;
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3{
+    font-family:'Fraunces',serif;
+    font-weight:600;
+    margin:0;
+    color:var(--tinta);
+  }
+  .envolucro{max-width:920px;margin:0 auto;padding:0 28px;}
+
+  /* topo */
+  .topo{padding:26px 0 0;}
+  .topo .envolucro{
+    display:flex;justify-content:space-between;align-items:baseline;
+    border-bottom:1px solid var(--linha);padding-bottom:16px;
+  }
+  .marca{font-family:'Fraunces',serif;font-weight:600;font-size:1.05rem;}
+  .fonte-dado{font-size:0.8rem;color:var(--tinta-suave);}
+
+  /* hero */
+  .hero{padding:56px 0 40px;}
+  .hero h1{font-size:2.5rem;line-height:1.12;max-width:15ch;font-optical-sizing:auto;}
+  .hero p.linha-fina{
+    margin-top:18px;font-size:1.08rem;max-width:52ch;color:var(--tinta-suave);
+  }
+
+  .regua-ancora{
+    margin-top:44px;border:1px solid var(--linha);border-radius:2px;
+    padding:26px 28px;background:rgba(255,255,255,0.35);
+  }
+  .regua-legenda{
+    display:flex;justify-content:space-between;font-size:0.85rem;color:var(--tinta-suave);margin-bottom:10px;
+  }
+  .regua-trilho{
+    position:relative;height:14px;background:var(--linha);border-radius:99px;overflow:visible;
+  }
+  .regua-preenchida{
+    position:absolute;left:0;top:0;height:100%;border-radius:99px;
+    background:linear-gradient(90deg,var(--perfil-b),var(--lacuna) 55%,var(--perfil-a));
+  }
+  .regua-marcador{
+    position:absolute;top:-9px;width:2px;height:32px;background:var(--tinta);
+  }
+  .regua-marcador span{
+    position:absolute;top:-30px;left:50%;transform:translateX(-50%);
+    white-space:nowrap;font-size:0.82rem;font-weight:600;
+  }
+  .regua-rotulos{display:flex;justify-content:space-between;margin-top:38px;font-size:0.85rem;}
+  .regua-rotulos .num{font-family:'Fraunces',serif;font-size:1.5rem;font-weight:600;}
+
+  /* simulador */
+  .simulador{padding:56px 0 64px;border-top:1px solid var(--linha);}
+  .simulador > .envolucro > h2{font-size:1.7rem;}
+  .simulador .intro{color:var(--tinta-suave);margin-top:10px;max-width:56ch;}
+
+  .perfis{
+    display:grid;grid-template-columns:1fr auto 1fr;gap:20px;align-items:start;margin-top:32px;
+  }
+  @media(max-width:720px){.perfis{grid-template-columns:1fr;}
+    .vs{justify-self:center;transform:rotate(90deg);margin:4px 0;}}
+
+  .cartao-perfil{
+    border:1px solid var(--linha);border-radius:3px;padding:22px;background:#fff;
+  }
+  .cartao-perfil[data-perfil="a"]{border-top:4px solid var(--perfil-a);}
+  .cartao-perfil[data-perfil="b"]{border-top:4px solid var(--perfil-b);}
+  .cartao-perfil h3{font-size:1.05rem;margin-bottom:16px;}
+  .cartao-perfil[data-perfil="a"] h3{color:var(--perfil-a);}
+  .cartao-perfil[data-perfil="b"] h3{color:var(--perfil-b);}
+
+  .campo{margin-bottom:16px;}
+  .campo label{
+    display:block;font-size:0.78rem;color:var(--tinta-suave);margin-bottom:7px;
+  }
+  .grupo-pilulas{display:flex;flex-wrap:wrap;gap:6px;}
+  .pilula{
+    border:1px solid var(--linha);background:transparent;color:var(--tinta);
+    padding:7px 13px;border-radius:99px;font-size:0.84rem;font-family:'Inter',sans-serif;
+    cursor:pointer;transition:background .15s, color .15s, border-color .15s;
+  }
+  .cartao-perfil[data-perfil="a"] .pilula[aria-pressed="true"]{
+    background:var(--perfil-a);border-color:var(--perfil-a);color:#fff;
+  }
+  .cartao-perfil[data-perfil="b"] .pilula[aria-pressed="true"]{
+    background:var(--perfil-b);border-color:var(--perfil-b);color:#fff;
+  }
+  .pilula:hover{border-color:var(--tinta);}
+
+  .campo-idade{display:flex;align-items:center;gap:12px;}
+  .passo-idade{
+    width:32px;height:32px;border-radius:50%;border:1px solid var(--linha);
+    background:#fff;font-size:1.1rem;cursor:pointer;line-height:1;
+  }
+  .valor-idade{font-family:'Fraunces',serif;font-size:1.2rem;min-width:64px;text-align:center;}
+
+  .vs{
+    align-self:center;font-family:'Fraunces',serif;font-style:italic;color:var(--tinta-suave);
+    font-size:0.95rem;padding-top:60px;
+  }
+
+  #btn-comparar{
+    margin-top:28px;background:var(--tinta);color:var(--papel);border:none;
+    padding:14px 26px;border-radius:2px;font-size:0.95rem;font-family:'Inter',sans-serif;
+    font-weight:600;cursor:pointer;
+  }
+  #btn-comparar:hover{background:#000;}
+
+  .resultado{
+    margin-top:34px;border:1px solid var(--linha);border-radius:3px;padding:28px;
+    background:rgba(255,255,255,0.5);
+  }
+  .resultado-rendas{display:flex;gap:24px;flex-wrap:wrap;}
+  .resultado-renda{flex:1;min-width:180px;}
+  .resultado-renda .rotulo{font-size:0.8rem;color:var(--tinta-suave);}
+  .resultado-renda .valor{font-family:'Fraunces',serif;font-size:1.9rem;font-weight:600;}
+  .resultado-renda.a .valor{color:var(--perfil-a);}
+  .resultado-renda.b .valor{color:var(--perfil-b);}
+  .resultado-lacuna{
+    margin-top:22px;padding-top:20px;border-top:1px dashed var(--linha);
+  }
+  .resultado-lacuna .rotulo{font-size:0.8rem;color:var(--tinta-suave);}
+  .resultado-lacuna .valor{font-family:'Fraunces',serif;font-size:2.4rem;font-weight:700;color:var(--lacuna);}
+  .resultado-lacuna .nota{font-size:0.85rem;color:var(--tinta-suave);margin-top:6px;max-width:60ch;}
+
+  /* metodologia */
+  .metodologia{padding:56px 0;border-top:1px solid var(--linha);}
+  .metodologia h2{font-size:1.5rem;}
+  .grade-metodo{display:grid;grid-template-columns:1fr 1fr;gap:28px;margin-top:26px;}
+  @media(max-width:720px){.grade-metodo{grid-template-columns:1fr;}}
+  .item-metodo .rotulo{
+    font-size:0.78rem;color:var(--tinta-suave);margin-bottom:6px;
+  }
+  .item-metodo p{margin:0;font-size:0.96rem;}
+
+  footer{
+    padding:44px 0 60px;border-top:1px solid var(--linha);
+  }
+  footer .manifesto{
+    font-family:'Fraunces',serif;font-style:italic;font-size:1.2rem;max-width:56ch;
+    line-height:1.5;color:var(--tinta);
+  }
+  footer .credito{margin-top:20px;font-size:0.8rem;color:var(--tinta-suave);}
+</style>
+
 </head>
 <body>
-    
+
+  <header class="topo">
+    <div class="envolucro">
+      <div class="marca">Renda, Gênero &amp; Raça</div>
+      <div class="fonte-dado">PNAD Contínua · IBGE · 2022</div>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="envolucro">
+      <h1>Duas pessoas idênticas.<br>Rendas muito diferentes.</h1>
+      <p class="linha-fina">
+        No modelo treinado com dados da PNAD Contínua, mudar apenas o gênero e a raça de uma pessoa —
+        mantendo idade, escolaridade e estado exatamente iguais — já muda a renda prevista em milhares
+        de reais por mês. Este protótipo deixa você comparar perfis e ver essa diferença ao vivo.
+      </p>
+
+      <div class="regua-ancora">
+        <div class="regua-legenda">
+          <span>Mulher, preta, superior completo, 30 anos, SP</span>
+          <span>Homem, branco, superior completo, 30 anos, SP</span>
+        </div>
+        <div class="regua-trilho">
+          <div class="regua-preenchida" style="width:100%"></div>
+          <div class="regua-marcador" style="left:0%"></div>
+          <div class="regua-marcador" style="left:100%"></div>
+        </div>
+        <div class="regua-rotulos">
+          <div><span class="num">R$ 2.399</span></div>
+          <div style="text-align:right"><span class="num">R$ 4.793</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="simulador" id="simulador">
+    <div class="envolucro">
+      <h2>Monte dois perfis e compare</h2>
+      <p class="intro">
+        Escolha gênero, raça, escolaridade e idade para dois perfis. O cálculo usa os coeficientes
+        do modelo do grupo (âncorado no exemplo acima); ao final, veja a renda prevista para cada um
+        e a diferença entre eles.
+      </p>
+
+      <div class="perfis">
+        <div class="cartao-perfil" data-perfil="a">
+          <h3>Perfil A</h3>
+
+          <div class="campo">
+            <label>Gênero</label>
+            <div class="grupo-pilulas" data-campo="sexo">
+              <button class="pilula" data-valor="mulher" aria-pressed="true">Mulher</button>
+              <button class="pilula" data-valor="homem" aria-pressed="false">Homem</button>
+            </div>
+          </div>
+
+          <div class="campo">
+            <label>Raça / cor</label>
+            <div class="grupo-pilulas" data-campo="raca">
+              <button class="pilula" data-valor="preta" aria-pressed="true">Preta</button>
+              <button class="pilula" data-valor="parda" aria-pressed="false">Parda</button>
+              <button class="pilula" data-valor="branca" aria-pressed="false">Branca</button>
+              <button class="pilula" data-valor="amarela" aria-pressed="false">Amarela</button>
+              <button class="pilula" data-valor="indigena" aria-pressed="false">Indígena</button>
+            </div>
+          </div>
+
+          <div class="campo">
+            <label>Escolaridade</label>
+            <div class="grupo-pilulas" data-campo="escolaridade">
+              <button class="pilula" data-valor="1">Sem instrução</button>
+              <button class="pilula" data-valor="3">Fundamental</button>
+              <button class="pilula" data-valor="5">Médio</button>
+              <button class="pilula" data-valor="7" aria-pressed="true">Superior</button>
+            </div>
+          </div>
+
+          <div class="campo">
+            <label>Idade</label>
+            <div class="campo-idade">
+              <button class="passo-idade" data-passo="-1">–</button>
+              <span class="valor-idade">30</span>
+              <button class="passo-idade" data-passo="1">+</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="vs">vs</div>
+
+        <div class="cartao-perfil" data-perfil="b">
+          <h3>Perfil B</h3>
+
+          <div class="campo">
+            <label>Gênero</label>
+            <div class="grupo-pilulas" data-campo="sexo">
+              <button class="pilula" data-valor="mulher" aria-pressed="false">Mulher</button>
+              <button class="pilula" data-valor="homem" aria-pressed="true">Homem</button>
+            </div>
+          </div>
+
+          <div class="campo">
+            <label>Raça / cor</label>
+            <div class="grupo-pilulas" data-campo="raca">
+              <button class="pilula" data-valor="preta" aria-pressed="false">Preta</button>
+              <button class="pilula" data-valor="parda" aria-pressed="false">Parda</button>
+              <button class="pilula" data-valor="branca" aria-pressed="true">Branca</button>
+              <button class="pilula" data-valor="amarela" aria-pressed="false">Amarela</button>
+              <button class="pilula" data-valor="indigena" aria-pressed="false">Indígena</button>
+            </div>
+          </div>
+
+          <div class="campo">
+            <label>Escolaridade</label>
+            <div class="grupo-pilulas" data-campo="escolaridade">
+              <button class="pilula" data-valor="1">Sem instrução</button>
+              <button class="pilula" data-valor="3">Fundamental</button>
+              <button class="pilula" data-valor="5">Médio</button>
+              <button class="pilula" data-valor="7" aria-pressed="true">Superior</button>
+            </div>
+          </div>
+
+          <div class="campo">
+            <label>Idade</label>
+            <div class="campo-idade">
+              <button class="passo-idade" data-passo="-1">–</button>
+              <span class="valor-idade">30</span>
+              <button class="passo-idade" data-passo="1">+</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <button id="btn-comparar">Comparar rendas previstas</button>
+
+      <div class="resultado" id="resultado" hidden>
+        <div class="resultado-rendas">
+          <div class="resultado-renda a">
+            <div class="rotulo">Renda prevista — Perfil A</div>
+            <div class="valor" id="valor-a">R$ 0</div>
+          </div>
+          <div class="resultado-renda b">
+            <div class="rotulo">Renda prevista — Perfil B</div>
+            <div class="valor" id="valor-b">R$ 0</div>
+          </div>
+        </div>
+        <div class="resultado-lacuna">
+          <div class="rotulo">Diferença entre os perfis</div>
+          <div class="valor" id="valor-lacuna">R$ 0</div>
+          <p class="nota">
+            Estimativa ilustrativa: os pesos de gênero, raça, escolaridade e idade foram calibrados
+            para reproduzir o exemplo real do modelo do grupo (âncora acima). Trocar essas constantes
+            no código pelos coeficientes finais do modelo treinado deixa o número exato.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="metodologia">
+    <div class="envolucro">
+      <h2>Como os dados chegaram até aqui</h2>
+      <div class="grade-metodo">
+        <div class="item-metodo">
+          <div class="rotulo">Fonte</div>
+          <p>PNAD Contínua 2022 (IBGE), amostra de 5%, obtida via BigQuery/basedosdados.</p>
+        </div>
+        <div class="item-metodo">
+          <div class="rotulo">Alvo</div>
+          <p>Rendimento mensal efetivo de todos os trabalhos (VD4020), uma variável contínua em reais.</p>
+        </div>
+        <div class="item-metodo">
+          <div class="rotulo">Sobre o peso amostral</div>
+          <p>A coluna "peso" indica quantas pessoas cada entrevistado representa. Ela entra apenas nas
+            estatísticas descritivas ponderadas, nunca como variável do modelo.</p>
+        </div>
+        <div class="item-metodo">
+          <div class="rotulo">Modelos testados</div>
+          <p>Regressão Linear, Ridge, Lasso, Random Forest e Gradient Boosting, comparados contra o
+            chute simples da média.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="envolucro">
+      <p class="manifesto">
+        "O modelo mede a desigualdade que existe nos dados; usá-lo para decidir salários seria
+        automatizá-la. Medimos para denunciar e transformar."
+      </p>
+      <p class="credito">Protótipo — TCC Grupo · Fly Educação &amp; Alura · dados: IBGE / PNAD Contínua 2022</p>
+    </div>
+  </footer>
+
+<script>
+(function(){
+  // --- coeficientes ilustrativos, calibrados nas duas âncoras do notebook ---
+  const RENDA_BASE_ESCOLARIDADE = { "1": 1600, "3": 2100, "5": 3000, "7": 4793 };
+  const FATOR_SEXO   = { homem: 1.00, mulher: 0.82 };
+  const FATOR_RACA   = { branca: 1.00, parda: 0.65, preta: 0.61, amarela: 0.90, indigena: 0.55 };
+
+  function fatorIdade(idade){
+    const dif = idade - 30;
+    return dif >= 0 ? 1 + 0.012*Math.min(dif,20) : 1 + 0.02*dif;
+  }
+
+  function calcularRenda(perfil){
+    const base = RENDA_BASE_ESCOLARIDADE[perfil.escolaridade];
+    return base * fatorIdade(perfil.idade) * FATOR_SEXO[perfil.sexo] * FATOR_RACA[perfil.raca];
+  }
+
+  function formatarReal(v){
+    return "R$ " + Math.round(v).toLocaleString('pt-BR');
+  }
+
+  function lerPerfil(cartao){
+    const perfil = { idade: parseInt(cartao.querySelector('.valor-idade').textContent, 10) };
+    cartao.querySelectorAll('.grupo-pilulas').forEach(function(grupo){
+      const campo = grupo.getAttribute('data-campo');
+      const ativo = grupo.querySelector('.pilula[aria-pressed="true"]');
+      perfil[campo] = ativo.getAttribute('data-valor');
+    });
+    return perfil;
+  }
+
+  document.querySelectorAll('.grupo-pilulas').forEach(function(grupo){
+    grupo.querySelectorAll('.pilula').forEach(function(botao){
+      botao.addEventListener('click', function(){
+        grupo.querySelectorAll('.pilula').forEach(function(b){ b.setAttribute('aria-pressed','false'); });
+        botao.setAttribute('aria-pressed','true');
+      });
+    });
+  });
+
+  document.querySelectorAll('.cartao-perfil').forEach(function(cartao){
+    const valorIdade = cartao.querySelector('.valor-idade');
+    cartao.querySelectorAll('.passo-idade').forEach(function(botao){
+      botao.addEventListener('click', function(){
+        const passo = parseInt(botao.getAttribute('data-passo'), 10);
+        let nova = parseInt(valorIdade.textContent, 10) + passo;
+        nova = Math.max(18, Math.min(70, nova));
+        valorIdade.textContent = nova;
+      });
+    });
+  });
+
+  document.getElementById('btn-comparar').addEventListener('click', function(){
+    const cartaoA = document.querySelector('.cartao-perfil[data-perfil="a"]');
+    const cartaoB = document.querySelector('.cartao-perfil[data-perfil="b"]');
+    const perfilA = lerPerfil(cartaoA);
+    const perfilB = lerPerfil(cartaoB);
+
+    const rendaA = calcularRenda(perfilA);
+    const rendaB = calcularRenda(perfilB);
+
+    document.getElementById('valor-a').textContent = formatarReal(rendaA);
+    document.getElementById('valor-b').textContent = formatarReal(rendaB);
+    document.getElementById('valor-lacuna').textContent = formatarReal(Math.abs(rendaA - rendaB));
+
+    document.getElementById('resultado').hidden = false;
+  });
+})();
+</script>
+
 </body>
 </html>
