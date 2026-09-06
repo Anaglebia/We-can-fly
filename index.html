@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>We Can Fly</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>We Can Fly</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -37,7 +37,6 @@
   }
   .envolucro{max-width:920px;margin:0 auto;padding:0 28px;}
 
-  /* topo */
   .topo{padding:26px 0 0;}
   .topo .envolucro{
     display:flex;justify-content:space-between;align-items:baseline;
@@ -46,7 +45,6 @@
   .marca{font-family:'Fraunces',serif;font-weight:600;font-size:1.05rem;}
   .fonte-dado{font-size:0.8rem;color:var(--tinta-suave);}
 
-  /* hero */
   .hero{padding:56px 0 40px;}
   .hero h1{font-size:2.5rem;line-height:1.12;max-width:15ch;font-optical-sizing:auto;}
   .hero p.linha-fina{
@@ -77,7 +75,6 @@
   .regua-rotulos{display:flex;justify-content:space-between;margin-top:38px;font-size:0.85rem;}
   .regua-rotulos .num{font-family:'Fraunces',serif;font-size:1.5rem;font-weight:600;}
 
-  /* simulador */
   .simulador{padding:56px 0 64px;border-top:1px solid var(--linha);}
   .simulador > .envolucro > h2{font-size:1.7rem;}
   .simulador .intro{color:var(--tinta-suave);margin-top:10px;max-width:56ch;}
@@ -151,7 +148,6 @@
   .resultado-lacuna .valor{font-family:'Fraunces',serif;font-size:2.4rem;font-weight:700;color:var(--lacuna);}
   .resultado-lacuna .nota{font-size:0.85rem;color:var(--tinta-suave);margin-top:6px;max-width:60ch;}
 
-  /* metodologia */
   .metodologia{padding:56px 0;border-top:1px solid var(--linha);}
   .metodologia h2{font-size:1.5rem;}
   .grade-metodo{display:grid;grid-template-columns:1fr 1fr;gap:28px;margin-top:26px;}
@@ -170,13 +166,12 @@
   }
   footer .credito{margin-top:20px;font-size:0.8rem;color:var(--tinta-suave);}
 </style>
-
 </head>
 <body>
 
   <header class="topo">
     <div class="envolucro">
-      <div class="marca">Renda, Gênero &amp; Raça</div>
+      <div class="marca">Renda, Sexo &amp; Raça</div>
       <div class="fonte-dado">PNAD Contínua · IBGE · 2022</div>
     </div>
   </header>
@@ -185,7 +180,7 @@
     <div class="envolucro">
       <h1>Duas pessoas idênticas.<br>Rendas muito diferentes.</h1>
       <p class="linha-fina">
-        No modelo treinado com dados da PNAD Contínua, mudar apenas o gênero e a raça de uma pessoa —
+        No modelo treinado com dados da PNAD Contínua, mudar apenas o sexo e a raça de uma pessoa —
         mantendo idade, escolaridade e estado exatamente iguais — já muda a renda prevista em milhares
         de reais por mês. Este protótipo deixa você comparar perfis e ver essa diferença ao vivo.
       </p>
@@ -212,7 +207,7 @@
     <div class="envolucro">
       <h2>Monte dois perfis e compare</h2>
       <p class="intro">
-        Escolha gênero, raça, escolaridade e idade para dois perfis. O cálculo usa os coeficientes
+        Escolha sexo, raça, escolaridade e idade para dois perfis. O cálculo usa os coeficientes
         do modelo do grupo (âncorado no exemplo acima); ao final, veja a renda prevista para cada um
         e a diferença entre eles.
       </p>
@@ -222,7 +217,7 @@
           <h3>Perfil A</h3>
 
           <div class="campo">
-            <label>Gênero</label>
+            <label>Sexo</label>
             <div class="grupo-pilulas" data-campo="sexo">
               <button class="pilula" data-valor="mulher" aria-pressed="true">Mulher</button>
               <button class="pilula" data-valor="homem" aria-pressed="false">Homem</button>
@@ -266,7 +261,7 @@
           <h3>Perfil B</h3>
 
           <div class="campo">
-            <label>Gênero</label>
+            <label>Sexo</label>
             <div class="grupo-pilulas" data-campo="sexo">
               <button class="pilula" data-valor="mulher" aria-pressed="false">Mulher</button>
               <button class="pilula" data-valor="homem" aria-pressed="true">Homem</button>
@@ -322,7 +317,7 @@
           <div class="rotulo">Diferença entre os perfis</div>
           <div class="valor" id="valor-lacuna">R$ 0</div>
           <p class="nota">
-            Estimativa ilustrativa: os pesos de gênero, raça, escolaridade e idade foram calibrados
+            Estimativa ilustrativa: os pesos de sexo, raça, escolaridade e idade foram calibrados
             para reproduzir o exemplo real do modelo do grupo (âncora acima). Trocar essas constantes
             no código pelos coeficientes finais do modelo treinado deixa o número exato.
           </p>
@@ -369,7 +364,6 @@
 
 <script>
 (function(){
-  // --- coeficientes ilustrativos, calibrados nas duas âncoras do notebook ---
   const RENDA_BASE_ESCOLARIDADE = { "1": 1600, "3": 2100, "5": 3000, "7": 4793 };
   const FATOR_SEXO   = { homem: 1.00, mulher: 0.82 };
   const FATOR_RACA   = { branca: 1.00, parda: 0.65, preta: 0.61, amarela: 0.90, indigena: 0.55 };
