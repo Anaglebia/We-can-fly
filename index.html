@@ -184,8 +184,10 @@
     display:flex;flex-wrap:wrap;gap:8px 10px;padding:0;margin:0;list-style:none;
   }
   .lista-integrantes li{
-    border:1px solid var(--linha);border-radius:99px;padding:5px 14px;
-    font-size:0.86rem;background:#fff;
+    font-size:0.9rem;color:var(--tinta);font-weight:600;
+  }
+  .lista-integrantes li:not(:last-child)::after{
+    content:"·";margin-left:10px;color:var(--tinta-suave);
   }
 </style>
 
@@ -396,8 +398,8 @@
           <li>Bernardo</li>
           <li>Victoria</li>
           <li>Lorena</li>
+          <li>Marina</li>
           <li>Roberta</li>
-	  <li>Marina</li>
         </ul>
       </div>
     </div>
@@ -410,6 +412,7 @@
         automatizá-la. Medimos para denunciar e transformar."
       </p>
       <p class="credito">Protótipo — Grupo 1 · We Can Fly · Fly Educação e Cultura, Alura &amp; Itaú · dados: IBGE / PNAD Contínua 2022</p>
+      <p class="credito"><a href="https://github.com/anaglebia/We-can-fly" style="color:inherit;">Ver o projeto completo, dados e notebook no GitHub →</a></p>
     </div>
   </footer>
 
