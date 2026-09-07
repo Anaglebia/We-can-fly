@@ -15,17 +15,20 @@ A ideia original do grupo era ir além do recorte binário e investigar como a r
 
 ## Os dados
 - Fonte: [[Rendimento médio mensal (R$) do trabalho principal segundo posição da ocupação com contribuição para a Previdência Social por sexo e raça/cor, Fonte:  (PNAD) e da Pesquisa Nacional por Amostra de Domicílios Contínua (PNAD Contínua) do IBGE, recorte, período 2022].]
-- Recorte: [periodo, regiao, filtros aplicados]
-- Amostra neste repositorio: [X linhas, so para o codigo rodar]
+- Recorte: [2022, Brasil, Apenas trabalhadores formais]
+- Amostra neste repositorio: [ O arquivo de testes contém **[X] linhas**, disponibilizado exclusivamente para garantir a execução e testagem do código.]
 - Como reproduzir: [ver dados/FONTE.md]
 
 ## O metodo
-[Quatro linhas: limpeza, variaveis, modelo escolhido e por que.]
+1. **Limpeza:** Tratamento de valores ausentes (NAs) e padronização das categorias de raça/cor e sexo.
+2. **Variáveis:** Definição do rendimento mensal como variável dependente, e sexo, raça e contribuição previdenciária como independentes.
+3. **Modelo:** Utilização de [inserir o modelo, ex: Regressão Linear Múltipla].
+4. **Justificativa:** Escolha feita por permitir isolar o impacto de cada característica demográfica no rendimento e medir a desigualdade salarial.
 
 ## Os resultados
-- **[numero principal]** - [o que ele quer dizer]
-- [segundo achado]
-- [terceiro achado]
+- **[numero principal]** - É a diferença média salarial observada entre homens brancos e mulheres negras na mesma posição
+- Trabalhadores sem contribuição para a previdência ganham, em média, X% menos
+- O recorte de raça/cor apresentou maior peso na disparidade de renda do que o recorte de gênero nesta região
 
 ## O prototipo
 [[Link do GitHub Pages](https://anaglebia.github.io/We-can-fly/)] - 
