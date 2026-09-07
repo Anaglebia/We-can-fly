@@ -55,7 +55,7 @@ Lorena - [LinkedIn](https://www.linkedin.com/in/lorena-g-a67978124)
 
 Roberta - [LinkedIn](https://www.linkedin.com/in/roberta-bueno-de-souza-algarves-8226b8173)
 
-Marina - [LinkedIn](https://www.linkedin.com/in/marina-sims-0a73a5196?utm_source=share_via&utm_content=profile&utm_medium=member_android))
+Marina - [LinkedIn](https://www.linkedin.com/in/marina-sims-0a73a5196?utm_source=share_via&utm_content=profile&utm_medium=member_android)
 
 
 ## Como rodar
