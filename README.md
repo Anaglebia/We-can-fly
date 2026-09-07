@@ -10,6 +10,9 @@ Análise de como sexo e raça influenciam a renda salarial média no Brasil, evi
 Analisamos as diferenças de remuneração entre grupos sociais.
 O estudo é importante para evidenciar desigualdades e a sub-representação no mercado de trabalho
 
+## Por que "sexo" e não "gênero"
+A ideia original do grupo era ir além do recorte binário e investigar como a renda varia entre toda a comunidade LGBTQIAPN+ — não só entre homens e mulheres cisgênero, mas incluindo pessoas trans, não-binárias, travestis e outras identidades de gênero e orientações sexuais. Era, na essência, uma crítica social: mostrar a desigualdade que o "sexo binário" oficial esconde. Isso não foi possível: a PNAD Contínua — nossa única fonte de dados — não coleta informação de identidade de gênero ou orientação sexual em nenhuma de suas edições, apenas a variável "sexo" (homem/mulher, atribuído). Por isso, ao longo do projeto, ajustamos a linguagem de "gênero" para "sexo" em todo o material: é a variável que os dados oficiais brasileiros efetivamente permitem medir hoje, e a ausência da comunidade LGBTQIAPN+ dessa estatística é, ela mesma, parte do problema que queríamos apontar.
+
 ## Os dados
 - Fonte: [[Rendimento médio mensal (R$) do trabalho principal segundo posição da ocupação com contribuição para a Previdência Social por sexo e raça/cor, Fonte:  (PNAD) e da Pesquisa Nacional por Amostra de Domicílios Contínua (PNAD Contínua) do IBGE, recorte, período 2022].]
 - Recorte: [periodo, regiao, filtros aplicados]
