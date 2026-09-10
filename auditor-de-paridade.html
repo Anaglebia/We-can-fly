@@ -1,0 +1,625 @@
+<title>Auditor de Paridade</title>
+<style>
+  :root{
+    --fundo:#f4f4f1; --fundo2:#ebebe6; --papel:#ffffff;
+    --tinta:#181a1b; --tinta-60:rgba(24,26,27,.64); --tinta-40:rgba(24,26,27,.44);
+    --linha:rgba(24,26,27,.12); --linha-2:rgba(24,26,27,.22);
+    --pinho:#163c3a; --pinho-2:#215c58; --cobalto:#3a5ba0; --ocre:#c8922a; --tijolo:#b23a2e; --verde:#2e7d5b;
+    --pinho-fraco:#e3ecea; --cobalto-fraco:#e4e9f5; --ocre-fraco:#f7efdc; --tijolo-fraco:#f6e3e0; --verde-fraco:#e1f0e8;
+    --raio:10px;
+    --sans:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{margin:0;background:var(--fundo);color:var(--tinta);font-family:var(--sans);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1120px;margin:0 auto;padding:20px 18px 56px}
+  .num{font-variant-numeric:tabular-nums}
+  [hidden]{display:none!important}
+
+  /* ---------- topo ---------- */
+  .topo{display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between;padding-bottom:16px;border-bottom:1px solid var(--linha);margin-bottom:22px}
+  .marca{display:flex;gap:12px;align-items:center}
+  .selo{width:38px;height:38px;flex:0 0 38px;border-radius:9px;background:var(--pinho);color:#fff;display:grid;place-items:center;font-weight:800;font-size:13px;letter-spacing:.04em}
+  .marca h1{margin:0;font-size:19px;letter-spacing:-.015em;font-weight:700}
+  .marca p{margin:2px 0 0;font-size:12.5px;color:var(--tinta-60);max-width:52ch}
+  .chips{display:flex;gap:6px;flex-wrap:wrap}
+  .chip{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;padding:5px 10px;border-radius:999px;border:1px solid var(--linha);color:var(--tinta-60);background:var(--papel)}
+  .chip i{width:7px;height:7px;border-radius:50%;background:var(--verde);display:inline-block}
+
+  /* ---------- blocos ---------- */
+  .rotulo{font-size:10.5px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;color:var(--tinta-40)}
+  section{margin-bottom:20px}
+  h2{font-size:15px;margin:0 0 3px;letter-spacing:-.01em}
+  .sub{font-size:12.5px;color:var(--tinta-60);margin:0 0 14px;max-width:72ch}
+  .cartao{background:var(--papel);border:1px solid var(--linha);border-radius:var(--raio);padding:18px}
+  .console{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:16px;align-items:start}
+  .cabeca{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-bottom:8px}
+
+  /* ---------- entrada ---------- */
+  textarea{width:100%;min-height:150px;font:12px/1.45 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;padding:10px;border:1px solid var(--linha);border-radius:8px;background:var(--fundo2);color:var(--tinta);resize:vertical}
+  .btn{font:inherit;font-size:12.5px;font-weight:700;cursor:pointer;border-radius:8px;padding:8px 13px;background:var(--pinho);color:#fff;border:1px solid var(--pinho)}
+  .btn.ghost{background:transparent;color:var(--pinho);border-color:var(--linha-2)}
+  .btn.ocre{background:var(--ocre);border-color:var(--ocre);color:#1a1200}
+  .btn:disabled{opacity:.45;cursor:not-allowed}
+  button:focus-visible,select:focus-visible,textarea:focus-visible,input:focus-visible{outline:2px solid var(--cobalto);outline-offset:2px}
+  .acoes{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:10px}
+  .arquivo{position:relative;overflow:hidden;display:inline-block}
+  .arquivo input{position:absolute;inset:0;opacity:0;cursor:pointer}
+  .campos{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1px;background:var(--linha);border:1px solid var(--linha);border-radius:8px;overflow:hidden;margin-top:14px}
+  .campo{background:var(--papel);padding:10px 12px;font-size:12.5px}
+  .campo .rotulo{display:block;margin-bottom:3px}
+  .campo b{font-weight:700;color:var(--pinho)}
+  .campo.falta b{color:var(--tijolo)}
+  .erro{background:var(--tijolo-fraco);border:1px solid var(--tijolo);border-radius:8px;padding:10px 12px;font-size:13px;margin-top:12px;color:#5b1c15}
+  .bloqueio{background:var(--fundo2);border:1px dashed var(--linha-2);border-radius:8px;padding:14px 16px;margin-top:14px;font-size:13px}
+  .bloqueio b{display:block;margin-bottom:4px;color:var(--pinho)}
+
+  .segmentado{display:flex;border:1px solid var(--linha);border-radius:8px;overflow:hidden;background:var(--fundo2)}
+  .segmentado button{flex:1;font:inherit;font-size:12.5px;padding:8px 6px;border:0;background:transparent;color:var(--tinta-60);cursor:pointer;white-space:nowrap}
+  .segmentado button[aria-pressed=true]{background:var(--pinho);color:#fff;font-weight:600}
+  .controles{display:grid;grid-template-columns:1fr auto auto;gap:10px;align-items:end;margin-bottom:14px}
+  .controles .rotulo{display:block;margin-bottom:6px}
+
+  /* ---------- diagnóstico ---------- */
+  .diag{position:relative;overflow:hidden;padding-left:24px;box-shadow:0 1px 2px rgba(24,26,27,.05),0 8px 22px rgba(24,26,27,.05)}
+  .trilho{position:absolute;left:0;top:0;bottom:0;width:6px;background:var(--verde)}
+  .diag.atencao .trilho{background:var(--ocre)}
+  .diag.critico .trilho{background:var(--tijolo)}
+  .status{display:inline-flex;align-items:center;gap:7px;font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:5px 11px;border-radius:999px;background:var(--verde);color:#fff}
+  .diag.atencao .status{background:var(--ocre);color:#1a1200}
+  .diag.critico .status{background:var(--tijolo)}
+  .leitura{font-size:14px;max-width:60ch;margin:10px 0 0}
+  .leitura b{color:var(--pinho)}
+  .tiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;background:var(--linha);border:1px solid var(--linha);border-radius:8px;overflow:hidden;margin-top:16px}
+  .tile{background:var(--papel);padding:12px 13px}
+  .tile .rotulo{display:block;margin-bottom:5px}
+  .tile .n{font-size:24px;white-space:nowrap;font-weight:800;letter-spacing:-.03em;font-variant-numeric:tabular-nums;line-height:1.1}
+  .tile .n.dinheiro{font-size:20px}
+  .tile .pe{font-size:11.5px;color:var(--tinta-60);margin-top:3px}
+  .tile .n.ok{color:var(--verde)} .tile .n.at{color:var(--ocre)} .tile .n.cr{color:var(--tijolo)}
+
+  /* ---------- decomposição ---------- */
+  .decomp{margin-top:16px}
+  .linha-dec{display:flex;justify-content:space-between;font-size:12.5px;color:var(--tinta-60);font-weight:600;margin-bottom:5px}
+  .barra{height:30px;border-radius:7px;background:var(--fundo2);display:flex;overflow:hidden}
+  .barra i{display:flex;align-items:center;justify-content:center;color:#fff;font-size:11.5px;font-weight:700;white-space:nowrap;overflow:hidden;transition:width .7s cubic-bezier(.2,.7,.2,1)}
+  .barra .dentro{background:var(--cobalto)} .barra .aloc{background:var(--ocre);color:#1a1200}
+  .bench{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--linha);border:1px solid var(--linha);border-radius:8px;overflow:hidden;margin-top:12px}
+  .bench div{background:var(--papel);padding:10px 12px;font-size:12.5px}
+  .bench .n{font-size:18px;font-weight:800;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+  .bench small{display:block;color:var(--tinta-60);font-size:11.5px}
+
+  /* ---------- por cargo ---------- */
+  .legenda{display:flex;gap:16px;flex-wrap:wrap;font-size:12px;color:var(--tinta-60);margin:6px 0 10px}
+  .legenda i{width:10px;height:10px;border-radius:50%;display:inline-block;margin-right:6px;vertical-align:-1px}
+  .rolar{overflow-x:auto}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th{text-align:left;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--tinta-40);border-bottom:1px solid var(--linha-2);padding:7px 10px 7px 0;white-space:nowrap}
+  td{padding:9px 10px 9px 0;border-bottom:1px solid var(--linha);font-variant-numeric:tabular-nums;white-space:nowrap;vertical-align:middle}
+  td.esq{white-space:normal;font-variant-numeric:normal;font-weight:600}
+  td.d{text-align:right} th.d{text-align:right}
+  .pill{display:inline-block;font-size:10.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:3px 8px;border-radius:999px}
+  .pill.ok{background:var(--verde-fraco);color:var(--verde)} .pill.at{background:var(--ocre-fraco);color:#7a5410}
+  .pill.cr{background:var(--tijolo-fraco);color:var(--tijolo)} .pill.nd{background:var(--fundo2);color:var(--tinta-60)}
+  .mini-gap{display:inline-block;width:90px;height:8px;border-radius:4px;background:var(--fundo2);vertical-align:middle;margin-right:8px;overflow:hidden}
+  .mini-gap i{display:block;height:100%;background:var(--tijolo)}
+
+  /* ---------- plano ---------- */
+  .plano{margin:0;padding:0;list-style:none;display:grid;gap:10px}
+  .plano li{display:grid;grid-template-columns:28px 1fr;gap:12px;font-size:13.5px;align-items:start}
+  .plano .p{width:28px;height:28px;border-radius:7px;background:var(--pinho);color:#fff;display:grid;place-items:center;font-weight:800;font-size:12px}
+  .plano b{color:var(--pinho)}
+  .relatorio{margin-top:14px;background:var(--fundo2);border:1px solid var(--linha);border-radius:8px;padding:12px;font:12px/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;white-space:pre-wrap;max-height:260px;overflow:auto;color:#2a2c2e}
+  .ok-copiado{font-size:12.5px;font-weight:700;color:var(--verde)}
+
+  .aviso{background:var(--ocre-fraco);border-left:4px solid var(--ocre);border-radius:0 8px 8px 0;padding:11px 14px;font-size:12.5px;color:#3e2c08;max-width:none}
+  .aviso b{display:block;font-size:11px;letter-spacing:.06em;text-transform:uppercase;margin-bottom:2px;color:#7a5410}
+  footer{border-top:1px solid var(--linha);margin-top:26px;padding-top:14px;font-size:12px;color:var(--tinta-60)}
+  footer b{color:var(--pinho)}
+
+  @media (max-width:820px){
+    .console{grid-template-columns:1fr}
+    .tiles{grid-template-columns:1fr 1fr}
+    .controles{grid-template-columns:1fr}
+  }
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+  <div class="topo">
+    <div class="marca">
+      <div class="selo">PA</div>
+      <div>
+        <h1>Auditor de Paridade</h1>
+        <p>Carregue a folha e veja onde a diferença salarial por gênero e raça está, quanto custa corrigir e como ela se compara ao mercado brasileiro.</p>
+      </div>
+    </div>
+    <div class="chips">
+      <span class="chip"><i></i> roda no seu navegador, nada é enviado</span>
+      <span class="chip">protótipo acadêmico</span>
+      <span class="chip">Lei 14.611/2023</span>
+    </div>
+  </div>
+
+  <!-- ================= ENTRADA ================= -->
+  <section>
+    <div class="console">
+      <div class="cartao">
+        <span class="rotulo">1. A folha</span>
+        <h2 style="margin-top:6px">Cole ou carregue um CSV</h2>
+        <p class="sub">Colunas mínimas: cargo, gênero, raça ou cor e salário. Opcionais: nível e jornada em horas. Colunas de nome ou matrícula são ignoradas. Separador por vírgula, ponto e vírgula ou tabulação.</p>
+        <textarea id="entrada" spellcheck="false" placeholder="cargo;nivel;genero;raca;jornada_h;salario
+Analista;pleno;mulher;negra;40;5200"></textarea>
+        <div class="acoes">
+          <button type="button" class="btn" id="btn-analisar">Analisar a folha</button>
+          <span class="arquivo"><button type="button" class="btn ghost">Carregar arquivo</button><input type="file" id="arq" accept=".csv,.txt,text/csv" aria-label="Carregar arquivo CSV"></span>
+          <button type="button" class="btn ghost" id="btn-exemplo">Usar folha de exemplo</button>
+        </div>
+        <div class="campos" id="campos"></div>
+        <div class="erro" id="erro" hidden></div>
+        <div class="bloqueio">
+          <b>Privacidade por construção</b>
+          O arquivo não sai desta página. Grupos com menos de 3 pessoas não são exibidos, para que nenhum salário individual possa ser deduzido da tela.
+        </div>
+      </div>
+
+      <div class="cartao">
+        <span class="rotulo">2. O que a lei pede</span>
+        <h2 style="margin-top:6px">Igualdade salarial e transparência</h2>
+        <p class="sub">A Lei 14.611/2023 exige igualdade de remuneração entre mulheres e homens para trabalho de igual valor e relatórios de transparência salarial para empresas com 100 ou mais pessoas empregadas. Onde houver desigualdade, a empresa precisa de um plano de ação com metas e prazos. Esta ferramenta prepara os três passos: medir, priorizar e estimar o custo.</p>
+        <div class="tiles">
+          <div class="tile"><span class="rotulo">Medir</span><div class="n" style="font-size:15px">por cargo e por recorte</div><div class="pe">gênero, raça e a interseção dos dois</div></div>
+          <div class="tile"><span class="rotulo">Comparar</span><div class="n" style="font-size:15px">com o mercado</div><div class="pe">PNAD Contínua 2022, modelo do TCC</div></div>
+          <div class="tile"><span class="rotulo">Corrigir</span><div class="n" style="font-size:15px">custo de equiparação</div><div class="pe">quanto custa nivelar pela referência</div></div>
+        </div>
+        <div class="bloqueio">
+          <b>Qual pergunta cada número responde</b>
+          O gap <b style="display:inline">total</b> compara todo mundo com todo mundo e captura também quem ocupa quais cargos. O gap <b style="display:inline">dentro do cargo</b> compara pessoas no mesmo posto: é o que a lei chama de trabalho de igual valor. A diferença entre os dois é a parcela que vem da distribuição das pessoas entre os cargos.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= RESULTADOS ================= -->
+  <div id="resultados" hidden>
+
+  <section>
+    <div class="controles">
+      <div>
+        <span class="rotulo">Recorte da comparação</span>
+        <div class="segmentado" id="seg-recorte">
+          <button type="button" data-r="genero" aria-pressed="true">Gênero: homens x mulheres</button>
+          <button type="button" data-r="raca" aria-pressed="false">Raça: brancas x negras</button>
+          <button type="button" data-r="inter" aria-pressed="false">Interseção: homens brancos x mulheres negras</button>
+        </div>
+      </div>
+      <div id="bloco-nivel" hidden>
+        <span class="rotulo">Comparar dentro de</span>
+        <div class="segmentado" id="seg-nivel">
+          <button type="button" data-n="cargo" aria-pressed="true">Cargo</button>
+          <button type="button" data-n="cargo_nivel" aria-pressed="false">Cargo e nível</button>
+        </div>
+      </div>
+      <div id="bloco-base">
+        <span class="rotulo">Base do salário</span>
+        <div class="segmentado" id="seg-base">
+          <button type="button" data-b="mensal" aria-pressed="true">Mensal</button>
+          <button type="button" data-b="40h" aria-pressed="false">Equivalente a 40h</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="console">
+      <div class="cartao diag" id="diag">
+        <div class="trilho"></div>
+        <div class="cabeca">
+          <div><span class="rotulo">3. Diagnóstico</span><h2 style="margin-top:6px" id="diag-titulo">Gap de gênero na folha</h2></div>
+          <span class="status" id="diag-status">equilibrado</span>
+        </div>
+        <p class="leitura" id="diag-leitura"></p>
+        <div class="tiles">
+          <div class="tile"><span class="rotulo">Gap total</span><div class="n" id="t-total"></div><div class="pe">mediana do grupo comparado contra a referência, folha inteira</div></div>
+          <div class="tile"><span class="rotulo">Gap dentro do cargo</span><div class="n" id="t-dentro"></div><div class="pe">média dos gaps por cargo, ponderada pelo tamanho do grupo comparado</div></div>
+          <div class="tile"><span class="rotulo">Custo de equiparação</span><div class="n dinheiro" id="t-custo"></div><div class="pe" id="t-custo-pe"></div></div>
+        </div>
+        <div class="decomp">
+          <div class="linha-dec"><span>De onde vem o gap total</span><span class="num" id="dec-total"></span></div>
+          <div class="barra"><i class="dentro" id="b-dentro" style="width:0%"></i><i class="aloc" id="b-aloc" style="width:0%"></i></div>
+          <div class="linha-dec" style="margin-top:5px"><span><i style="display:inline-block;width:9px;height:9px;border-radius:2px;background:var(--cobalto);margin-right:5px"></i>dentro do mesmo cargo</span><span><i style="display:inline-block;width:9px;height:9px;border-radius:2px;background:var(--ocre);margin-right:5px"></i>pela distribuição entre cargos</span></div>
+        </div>
+      </div>
+
+      <div class="cartao">
+        <span class="rotulo">4. Contra o mercado</span>
+        <h2 style="margin-top:6px">A sua folha e o Brasil</h2>
+        <p class="sub" id="bench-sub"></p>
+        <div class="bench" id="bench"></div>
+        <div class="tiles" style="margin-top:14px">
+          <div class="tile"><span class="rotulo">Pessoas na folha</span><div class="n" id="t-n"></div><div class="pe" id="t-n-pe"></div></div>
+          <div class="tile"><span class="rotulo">Cargos analisados</span><div class="n" id="t-cargos"></div><div class="pe" id="t-cargos-pe"></div></div>
+          <div class="tile"><span class="rotulo">Cargos sem o grupo comparado</span><div class="n" id="t-seg"></div><div class="pe">onde a desigualdade é de acesso, não de salário</div></div>
+        </div>
+        <div class="bloqueio" id="bench-nota"></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="cartao">
+      <div class="cabeca">
+        <div><span class="rotulo">5. Por cargo</span><h2 style="margin-top:6px">Onde a diferença está</h2></div>
+        <div class="legenda"><span><i style="background:var(--pinho)"></i>referência</span><span><i style="background:var(--cobalto)"></i>grupo comparado</span></div>
+      </div>
+      <div class="rolar"><svg id="dumbbell" viewBox="0 0 900 100" role="img" aria-label="Mediana salarial por cargo, referência e grupo comparado" style="width:100%;height:auto;display:block"></svg></div>
+      <div class="rolar" style="margin-top:8px"><table>
+        <thead><tr><th>Cargo (e nível, quando houver)</th><th class="d">Referência</th><th class="d">Comparado</th><th class="d">Gap</th><th>Leitura</th><th class="d">Custo mensal</th></tr></thead>
+        <tbody id="tab-cargos"></tbody>
+      </table></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="console">
+      <div class="cartao">
+        <span class="rotulo">6. Plano de ação sugerido</span>
+        <h2 style="margin-top:6px">Por onde começar</h2>
+        <p class="sub">Gerado a partir da folha carregada. A ordem segue o tamanho do gap dentro do cargo e o número de pessoas afetadas.</p>
+        <ol class="plano" id="plano"></ol>
+      </div>
+      <div class="cartao">
+        <div class="cabeca">
+          <div><span class="rotulo">7. Resumo para o relatório</span><h2 style="margin-top:6px">Texto pronto</h2></div>
+          <div class="acoes" style="margin:0"><button type="button" class="btn ocre" id="btn-copiar">Copiar resumo</button><span class="ok-copiado" id="ok-copiado" hidden>copiado</span></div>
+        </div>
+        <div class="relatorio" id="relatorio"></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="aviso">
+    <b>Aviso obrigatório</b>
+    Protótipo acadêmico. Esta ferramenta identifica diferenças estatísticas entre grupos e não avalia casos individuais nem define salário de ninguém. O benchmark de mercado vem de um modelo treinado nos microdados da PNAD Contínua de 2022 que descreve a desigualdade existente nos dados e não estabelece relação causal. Decisões sobre remuneração, contratação ou crédito exigem análise humana e jurídica.
+  </div>
+  </div><!-- /resultados -->
+
+  <footer>
+    <p><b>Auditor de Paridade</b>, protótipo do Grupo 1 da Turma Fly, curso de dados da Fly Educação. Benchmark: microdados da PNAD Contínua, IBGE, 2022, 3º trimestre, modelo campeão do TCC (GB no log da renda, conjunto B). Gap residual de gênero no mesmo posto de trabalho: 20,0%. Gap total: 33,1%. Renda mediana de pessoas pretas e pardas 25,0% abaixo da de pessoas brancas. A folha de exemplo é fictícia e existe só para demonstrar a ferramenta.</p>
+  </footer>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var PINHO="#163c3a", COBALTO="#3a5ba0", OCRE="#c8922a", TIJOLO="#b23a2e", LINHA="rgba(24,26,27,.14)", TINTA="#181a1b", T60="rgba(24,26,27,.64)";
+  var MIN_GRUPO = 3;
+
+  /* Benchmarks do TCC (notebook v2_1). Números fixos, nunca calculados aqui. */
+  var PNAD = {
+    genero: {dentro:20.0, total:33.1, txt_dentro:"gap residual de gênero no mesmo posto de trabalho (contrafactual do modelo, mediana das diferenças individuais)", txt_total:"gap total de gênero, sem controlar ocupação (modelo A)"},
+    raca:   {dentro:null, total:25.0, txt_dentro:"o trabalho não estimou o gap de raça dentro do mesmo posto com a mesma conta; use só o total", txt_total:"renda mediana de pessoas pretas e pardas abaixo da de pessoas brancas, valores ponderados"},
+    inter:  {dentro:29.6, total:47.0, txt_dentro:"quatro pessoas idênticas no mesmo posto: mulher preta contra homem branco (35 anos, superior completo, SP)", txt_total:"mulher negra contra homem branco, mediana ponderada da base inteira"}
+  };
+
+  var FOLHA_EXEMPLO = "id;cargo;nivel;genero;raca;jornada_h;salario\nF001;Direção;júnior;mulher;branca;40;15200\nF002;Direção;júnior;homem;branca;40;17640\nF003;Direção;pleno;homem;branca;40;22190\nF004;Direção;sênior;homem;negra;40;25790\nF005;Direção;pleno;homem;branca;40;22320\nF006;Direção;pleno;mulher;branca;40;18440\nF007;Gerência;júnior;homem;branca;40;10300\nF008;Gerência;pleno;homem;branca;40;13150\nF009;Gerência;júnior;mulher;branca;40;9120\nF010;Gerência;pleno;mulher;negra;40;10560\nF011;Gerência;sênior;homem;branca;40;16840\nF012;Gerência;pleno;homem;negra;40;11880\nF013;Gerência;júnior;homem;branca;40;10200\nF014;Gerência;pleno;homem;negra;40;12010\nF015;Gerência;sênior;mulher;branca;40;14990\nF016;Gerência;pleno;mulher;branca;40;11460\nF017;Gerência;júnior;mulher;branca;40;9010\nF018;Gerência;sênior;homem;branca;40;16990\nF019;Engenharia de dados;júnior;mulher;branca;40;6980\nF020;Engenharia de dados;júnior;homem;branca;40;7470\nF021;Engenharia de dados;pleno;homem;negra;40;8670\nF022;Engenharia de dados;sênior;homem;branca;40;12300\nF023;Engenharia de dados;pleno;mulher;negra;30;5880\nF024;Engenharia de dados;sênior;mulher;branca;40;11280\nF025;Engenharia de dados;pleno;homem;branca;40;9670\nF026;Engenharia de dados;júnior;homem;branca;40;7560\nF027;Engenharia de dados;pleno;homem;branca;40;9510\nF028;Engenharia de dados;sênior;homem;branca;40;12400\nF029;Engenharia de dados;pleno;homem;branca;40;9550\nF030;Engenharia de dados;júnior;homem;negra;40;7070\nF031;Engenharia de dados;pleno;homem;negra;40;8910\nF032;Engenharia de dados;pleno;mulher;branca;40;8480\nF033;Engenharia de dados;júnior;mulher;branca;40;6850\nF034;Engenharia de dados;sênior;homem;branca;40;12110\nF035;Especialista de produto;júnior;homem;branca;40;6980\nF036;Especialista de produto;júnior;mulher;negra;40;5680\nF037;Especialista de produto;pleno;mulher;branca;40;7740\nF038;Especialista de produto;sênior;mulher;branca;40;9860\nF039;Especialista de produto;pleno;homem;negra;40;8140\nF040;Especialista de produto;sênior;homem;branca;40;11660\nF041;Especialista de produto;pleno;homem;branca;40;8670\nF042;Especialista de produto;pleno;mulher;branca;40;7700\nF043;Especialista de produto;júnior;homem;negra;40;6570\nF044;Especialista de produto;júnior;mulher;branca;40;6160\nF045;Especialista de produto;pleno;mulher;branca;40;7690\nF046;Especialista de produto;pleno;homem;branca;40;8860\nF047;Analista de negócios;júnior;mulher;negra;40;4350\nF048;Analista de negócios;pleno;mulher;branca;40;5660\nF049;Analista de negócios;júnior;homem;branca;40;4900\nF050;Analista de negócios;sênior;mulher;negra;40;7220\nF051;Analista de negócios;pleno;homem;branca;40;6200\nF052;Analista de negócios;pleno;mulher;negra;40;5580\nF053;Analista de negócios;sênior;homem;branca;40;7910\nF054;Analista de negócios;júnior;mulher;branca;40;4660\nF055;Analista de negócios;pleno;mulher;negra;40;5580\nF056;Analista de negócios;pleno;homem;branca;40;6300\nF057;Analista de negócios;sênior;mulher;branca;40;7600\nF058;Analista de negócios;júnior;homem;negra;40;4640\nF059;Analista de negócios;pleno;homem;branca;40;6080\nF060;Analista de negócios;sênior;homem;branca;40;8060\nF061;Analista de negócios;pleno;mulher;negra;40;5560\nF062;Analista de negócios;júnior;mulher;branca;40;4530\nF063;Suporte técnico;júnior;mulher;branca;40;2770\nF064;Suporte técnico;júnior;homem;branca;30;2160\nF065;Suporte técnico;pleno;homem;branca;40;3570\nF066;Suporte técnico;sênior;homem;branca;40;4750\nF067;Suporte técnico;pleno;homem;negra;30;2570\nF068;Suporte técnico;pleno;mulher;negra;30;2540\nF069;Suporte técnico;sênior;mulher;branca;40;4580\nF070;Suporte técnico;pleno;mulher;negra;40;3390\nF071;Suporte técnico;júnior;homem;branca;40;2830\nF072;Suporte técnico;júnior;mulher;negra;40;2700\nF073;Suporte técnico;pleno;homem;branca;40;3570\nF074;Suporte técnico;pleno;mulher;negra;40;3380\nF075;Suporte técnico;sênior;mulher;negra;40;4320\nF076;Suporte técnico;sênior;homem;branca;40;4740\nF077;Suporte técnico;pleno;homem;negra;40;3430\nF078;Suporte técnico;júnior;homem;negra;40;2810\nF079;Suporte técnico;pleno;mulher;negra;30;2550\nF080;Suporte técnico;júnior;mulher;negra;30;2060\nF081;Atendimento;júnior;mulher;branca;40;2050\nF082;Atendimento;pleno;mulher;negra;40;2530\nF083;Atendimento;sênior;mulher;negra;30;2470\nF084;Atendimento;pleno;mulher;negra;40;2460\nF085;Atendimento;júnior;homem;branca;40;2100\nF086;Atendimento;pleno;homem;negra;40;2530\nF087;Atendimento;júnior;mulher;negra;40;2040\nF088;Atendimento;sênior;homem;branca;40;3380\nF089;Atendimento;pleno;mulher;negra;40;2500\nF090;Atendimento;sênior;mulher;negra;40;3250\nF091;Atendimento;pleno;mulher;negra;40;2530\nF092;Atendimento;júnior;mulher;branca;40;2000\nF093;Atendimento;pleno;mulher;negra;40;2510\nF094;Atendimento;pleno;homem;negra;40;2570\nF095;Atendimento;sênior;mulher;negra;40;3210\nF096;Atendimento;pleno;mulher;negra;40;2540\nF097;Atendimento;júnior;mulher;branca;40;2080\nF098;Atendimento;júnior;homem;negra;40;2020\nF099;Atendimento;pleno;mulher;branca;40;2580\nF100;Atendimento;sênior;mulher;branca;40;3300\nF101;Atendimento;pleno;mulher;branca;40;2560\nF102;Atendimento;pleno;homem;negra;40;2570\nF103;Serviços gerais;júnior;homem;negra;40;1510\nF104;Serviços gerais;júnior;mulher;negra;40;1520\nF105;Serviços gerais;pleno;homem;negra;40;1870\nF106;Serviços gerais;sênior;homem;negra;40;2480\nF107;Serviços gerais;pleno;mulher;branca;40;1890\nF108;Serviços gerais;sênior;mulher;negra;40;2420\nF109;Serviços gerais;pleno;mulher;negra;40;1860\nF110;Serviços gerais;júnior;mulher;negra;40;1500\nF111;Serviços gerais;pleno;mulher;branca;40;1890\nF112;Serviços gerais;pleno;homem;negra;30;1420\nF113;Serviços gerais;sênior;mulher;negra;40;2470\nF114;Serviços gerais;pleno;mulher;negra;40;1900";
+
+  var st = {dados:null, colunas:null, recorte:"genero", base:"mensal", agrupa:"cargo", temJornada:false, temNivel:false};
+
+  var fmt = new Intl.NumberFormat("pt-BR",{maximumFractionDigits:0});
+  function brl(v){ return "R$ " + fmt.format(Math.round(v)); }
+  function pct(v){ return v.toFixed(1).replace(".",",") + "%"; }
+  function el(id){ return document.getElementById(id); }
+  function mediana(a){ if(!a.length) return null; var s=a.slice().sort(function(x,y){return x-y;}); var m=s.length>>1;
+    return s.length%2 ? s[m] : (s[m-1]+s[m])/2; }
+  function svgEl(t,a){ var e=document.createElementNS("http://www.w3.org/2000/svg",t); for(var k in a) e.setAttribute(k,a[k]); return e; }
+  function txt(p,x,y,s,a){ var t=svgEl("text",a||{}); t.setAttribute("x",x); t.setAttribute("y",y); t.textContent=s; p.appendChild(t); return t; }
+  function limpa(s){ return String(s||"").trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,""); }
+
+  /* ---------- leitura do CSV ---------- */
+  var SINONIMOS = {
+    cargo:   ["cargo","funcao","posicao","cargo_funcao","job","role","titulo","ocupacao"],
+    genero:  ["genero","sexo","gender"],
+    raca:    ["raca","cor","raca_cor","cor_raca","etnia","raca/cor","cor/raca","race"],
+    salario: ["salario","remuneracao","salario_base","salario_mensal","salary","vencimento","base"],
+    nivel:   ["nivel","senioridade","level","grau","faixa"],
+    jornada: ["jornada","jornada_h","horas","carga_horaria","horas_semanais","hours"]
+  };
+  function parseCSV(texto){
+    var linhas = texto.replace(/\r/g,"").split("\n").filter(function(l){ return l.trim().length; });
+    if(linhas.length < 2) throw new Error("Preciso de pelo menos um cabeçalho e uma linha de dados.");
+    var cab = linhas[0], sep = ";";
+    var c = {";":(cab.match(/;/g)||[]).length, ",":(cab.match(/,/g)||[]).length, "\t":(cab.match(/\t/g)||[]).length};
+    sep = Object.keys(c).sort(function(a,b){ return c[b]-c[a]; })[0];
+    var cols = cab.split(sep).map(function(h){ return limpa(h).replace(/["']/g,""); });
+    var mapa = {};
+    Object.keys(SINONIMOS).forEach(function(k){
+      var i = -1;
+      for(var j=0;j<cols.length;j++){ if(SINONIMOS[k].indexOf(cols[j])>=0){ i=j; break; } }
+      if(i<0){ for(var j2=0;j2<cols.length;j2++){ if(cols[j2].indexOf(k)>=0){ i=j2; break; } } }
+      mapa[k]=i;
+    });
+    var faltam = ["cargo","genero","raca","salario"].filter(function(k){ return mapa[k]<0; });
+    if(faltam.length) throw new Error("Não encontrei a coluna: " + faltam.join(", ") + ". Nomes aceitos: " +
+      faltam.map(function(k){ return SINONIMOS[k].slice(0,3).join(" / "); }).join("; ") + ".");
+    var linhasOk = [], descartadas = 0;
+    for(var i=1;i<linhas.length;i++){
+      var p = linhas[i].split(sep).map(function(v){ return v.trim().replace(/^["']|["']$/g,""); });
+      var g = normGenero(p[mapa.genero]), r = normRaca(p[mapa.raca]), s = normSalario(p[mapa.salario]);
+      var cargo = (p[mapa.cargo]||"").trim();
+      if(!cargo || !g || !r || !(s>0)){ descartadas++; continue; }
+      var linha = {cargo:cargo, genero:g, raca:r, salario:s};
+      if(mapa.nivel>=0 && p[mapa.nivel]) linha.nivel = p[mapa.nivel].trim();
+      if(mapa.jornada>=0){ var h = parseFloat(String(p[mapa.jornada]).replace(",",".")); if(h>0) linha.jornada=h; }
+      linhasOk.push(linha);
+    }
+    if(!linhasOk.length) throw new Error("Nenhuma linha válida. Confira gênero (homem/mulher), raça (branca, preta, parda, negra, amarela, indígena) e salário numérico.");
+    return {linhas:linhasOk, mapa:mapa, cols:cols, descartadas:descartadas,
+      temNivel: linhasOk.some(function(l){ return l.nivel; }),
+      temJornada: linhasOk.some(function(l){ return l.jornada; })};
+  }
+  function normGenero(v){ v=limpa(v);
+    if(["m","masc","masculino","homem","male","h"].indexOf(v)>=0) return "homem";
+    if(["f","fem","feminino","mulher","female"].indexOf(v)>=0) return "mulher";
+    return null; }
+  function normRaca(v){ v=limpa(v);
+    if(["branca","branco","white","b"].indexOf(v)>=0) return "branca";
+    if(["preta","preto","parda","pardo","negra","negro","black","n","p"].indexOf(v)>=0) return "negra";
+    if(["amarela","amarelo","asian"].indexOf(v)>=0) return "amarela";
+    if(["indigena","indio","india"].indexOf(v)>=0) return "indigena";
+    return v ? "outra" : null; }
+  function normSalario(v){ v=String(v||"").replace(/[R$\s]/g,"");
+    if(/,\d{1,2}$/.test(v)) v = v.replace(/\./g,"").replace(",","."); else v = v.replace(/,/g,"");
+    var n = parseFloat(v); return isNaN(n)?null:n; }
+
+  /* ---------- motor de cálculo ---------- */
+  var RECORTES = {
+    genero:{ref:function(l){return l.genero==="homem";}, cmp:function(l){return l.genero==="mulher";},
+      nomeRef:"homens", nomeCmp:"mulheres", titulo:"Gap de gênero na folha"},
+    raca:{ref:function(l){return l.raca==="branca";}, cmp:function(l){return l.raca==="negra";},
+      nomeRef:"pessoas brancas", nomeCmp:"pessoas negras", titulo:"Gap de raça na folha"},
+    inter:{ref:function(l){return l.genero==="homem"&&l.raca==="branca";}, cmp:function(l){return l.genero==="mulher"&&l.raca==="negra";},
+      nomeRef:"homens brancos", nomeCmp:"mulheres negras", titulo:"Gap interseccional na folha"}
+  };
+  function valor(l){ return (st.base==="40h" && l.jornada) ? l.salario/l.jornada*40 : l.salario; }
+
+  function calcula(){
+    var R = RECORTES[st.recorte], L = st.dados.linhas;
+    var ref = L.filter(R.ref).map(valor), cmp = L.filter(R.cmp).map(valor);
+    var medRef = mediana(ref), medCmp = mediana(cmp);
+    var gapTotal = (medRef && medCmp && ref.length>=MIN_GRUPO && cmp.length>=MIN_GRUPO) ? (1-medCmp/medRef)*100 : null;
+
+    var porCargo = {}, usaNivel = st.temNivel && st.agrupa==="cargo_nivel";
+    L.forEach(function(l){ var k = usaNivel && l.nivel ? l.cargo + " · " + l.nivel : l.cargo; (porCargo[k] = porCargo[k] || []).push(l); });
+    var cargos = Object.keys(porCargo).map(function(c){
+      var ls = porCargo[c], a = ls.filter(R.ref).map(valor), b = ls.filter(R.cmp).map(valor);
+      var mr = mediana(a), mc = mediana(b);
+      var ok = a.length>=MIN_GRUPO && b.length>=MIN_GRUPO;
+      var gap = ok ? (1-mc/mr)*100 : null;
+      var custo = 0;
+      if(ok && gap>0){ ls.filter(R.cmp).forEach(function(l){ var v=valor(l); if(v<mr) custo += (mr-v); }); }
+      return {cargo:c, n:ls.length, nRef:a.length, nCmp:b.length, medRef:mr, medCmp:mc, gap:gap, ok:ok, custo:custo,
+        semCmp: b.length===0, semRef: a.length===0};
+    }).sort(function(x,y){ return (y.medRef||y.medCmp||0)-(x.medRef||x.medCmp||0); });
+
+    var comp = cargos.filter(function(c){ return c.ok; });
+    var pesoTot = comp.reduce(function(s,c){ return s+c.nCmp; },0);
+    var gapDentro = pesoTot ? comp.reduce(function(s,c){ return s+c.gap*c.nCmp; },0)/pesoTot : null;
+    var custoTotal = comp.reduce(function(s,c){ return s+c.custo; },0);
+    var afetadas = 0; comp.forEach(function(c){ if(c.gap<=0) return; porCargo[c.cargo].filter(R.cmp).forEach(function(l){ if(valor(l)<c.medRef) afetadas++; }); });
+
+    return {R:R, nRef:ref.length, nCmp:cmp.length, medRef:medRef, medCmp:medCmp, gapTotal:gapTotal,
+      cargos:cargos, comparaveis:comp.length, gapDentro:gapDentro, custoTotal:custoTotal, afetadas:afetadas,
+      segregados: cargos.filter(function(c){ return c.semCmp; }).length};
+  }
+
+  /* ---------- render ---------- */
+  function classeGap(g){ if(g==null) return "nd"; if(g>=15) return "cr"; if(g>=5) return "at"; return "ok"; }
+  function leituraGap(g){ if(g==null) return "poucos casos para comparar"; if(g>=15) return "crítico"; if(g>=5) return "atenção"; if(g<=-5) return "comparado acima"; return "dentro da faixa"; }
+
+  function render(){
+    var r = calcula(), R = r.R;
+    el("resultados").hidden = false;
+    el("bloco-base").hidden = !st.temJornada;
+    el("bloco-nivel").hidden = !st.temNivel;
+
+    var diag = el("diag"), nivel = classeGap(r.gapDentro!=null ? r.gapDentro : r.gapTotal);
+    if(nivel==="ok" && r.gapTotal!=null && r.gapTotal>=15) nivel="at";
+    diag.className = "cartao diag " + ({cr:"critico",at:"atencao",ok:"",nd:""}[nivel]);
+    el("diag-status").textContent = {cr:"crítico", at:"atenção", ok:"equilibrado", nd:"sem comparação"}[nivel];
+    el("diag-titulo").textContent = R.titulo;
+
+    var leitura;
+    if(r.gapTotal==null) leitura = "Não há pessoas suficientes nos dois grupos para comparar (mínimo de " + MIN_GRUPO + " de cada lado).";
+    else {
+      leitura = "Na folha inteira, a mediana salarial de <b>" + R.nomeCmp + "</b> é " + brl(r.medCmp) + " contra " + brl(r.medRef) + " de " + R.nomeRef + ", uma diferença de <b>" + pct(r.gapTotal) + "</b>. ";
+      if(r.gapDentro!=null){
+        var aloc = r.gapTotal - r.gapDentro;
+        leitura += "Comparando só pessoas no mesmo cargo, a diferença é de <b>" + pct(r.gapDentro) + "</b>. ";
+        leitura += aloc>0.5 ? "Os outros " + pct(aloc) + " vêm da distribuição entre cargos: o grupo comparado está mais presente nos cargos que pagam menos."
+          : aloc<-0.5 ? "O gap dentro do cargo é maior que o total: a distribuição entre cargos disfarça parte da diferença." : "A distribuição entre cargos quase não muda o quadro.";
+      } else leitura += "Nenhum cargo tem pelo menos " + MIN_GRUPO + " pessoas de cada grupo, então o gap dentro do cargo não pôde ser calculado.";
+    }
+    el("diag-leitura").innerHTML = leitura;
+
+    el("t-total").textContent = r.gapTotal==null ? "sem dado" : pct(r.gapTotal);
+    el("t-total").className = "n " + classeGap(r.gapTotal);
+    el("t-dentro").textContent = r.gapDentro==null ? "sem dado" : pct(r.gapDentro);
+    el("t-dentro").className = "n " + classeGap(r.gapDentro);
+    el("t-custo").textContent = r.comparaveis ? brl(r.custoTotal) : "sem dado";
+    el("t-custo-pe").textContent = r.comparaveis ? "por mês. " + brl(r.custoTotal*12) + " por ano para levar " + r.afetadas + " pessoas do grupo comparado até a mediana da referência no mesmo cargo" : "";
+
+    if(r.gapTotal!=null && r.gapDentro!=null && r.gapTotal>0){
+      var d = Math.max(0,Math.min(r.gapDentro, r.gapTotal)), a = Math.max(0, r.gapTotal-d);
+      el("dec-total").textContent = pct(r.gapTotal);
+      var pd = d/r.gapTotal*100, pa = a/r.gapTotal*100;
+      el("b-dentro").style.width = pd+"%"; el("b-dentro").textContent = pd>=22 ? "dentro do posto " + pct(d) : (pd>=9 ? pct(d) : "");
+      el("b-aloc").style.width = pa+"%"; el("b-aloc").textContent = pa>=22 ? "entre postos " + pct(a) : (pa>=9 ? pct(a) : "");
+    } else { el("dec-total").textContent=""; el("b-dentro").style.width="0%"; el("b-aloc").style.width="0%"; }
+
+    /* benchmark */
+    var P = PNAD[st.recorte], bench = el("bench"); bench.innerHTML="";
+    function cel(rot, meu, mercado, txtM){
+      var div=document.createElement("div");
+      var cor = (meu==null||mercado==null) ? "" : (meu>mercado ? "color:var(--tijolo)" : "color:var(--verde)");
+      div.innerHTML = '<span class="rotulo">'+rot+'</span><div class="n" style="'+cor+'">'+(meu==null?"sem dado":pct(meu))+
+        ' <span style="font-size:12px;font-weight:600;color:var(--tinta-60)">na folha</span></div>'+
+        '<div class="n" style="font-size:14px;color:var(--tinta)">'+(mercado==null?"não estimado":pct(mercado))+' <span style="font-size:12px;font-weight:600;color:var(--tinta-60)">no mercado</span></div><small>'+txtM+'</small>';
+      bench.appendChild(div);
+    }
+    cel("Dentro do mesmo posto", r.gapDentro, P.dentro, P.txt_dentro);
+    cel("Total", r.gapTotal, P.total, P.txt_total);
+    var frase;
+    if(r.gapDentro!=null && P.dentro!=null) frase = r.gapDentro>P.dentro ? "Dentro do mesmo cargo, a folha está pior que o mercado brasileiro medido pelo modelo do TCC."
+      : r.gapDentro>0 ? "Dentro do mesmo cargo, a folha tem gap menor que o mercado, mas ainda positivo." : "Dentro do mesmo cargo, a folha não reproduz o gap do mercado.";
+    else if(r.gapTotal!=null && P.total!=null) frase = r.gapTotal>P.total ? "No total, a folha está pior que o mercado." : "No total, a folha tem gap menor que o mercado.";
+    else frase = "Sem base suficiente para comparar com o mercado.";
+    el("bench-sub").textContent = frase;
+    el("bench-nota").innerHTML = "<b>Contas diferentes, leitura com cuidado</b>Na folha, o gap é a diferença bruta de medianas. No mercado, o número vem de um modelo que mantém idade, escolaridade, estado, ocupação, setor, vínculo e jornada constantes e troca só o gênero (ou a raça) das mesmas 10.016 pessoas do teste. Serve como referência de ordem de grandeza, não como comparação exata.";
+
+    el("t-n").textContent = fmt.format(st.dados.linhas.length);
+    el("t-n-pe").textContent = r.nRef + " " + R.nomeRef + ", " + r.nCmp + " " + R.nomeCmp + (st.dados.descartadas ? ", " + st.dados.descartadas + " linhas descartadas" : "");
+    el("t-cargos").textContent = r.comparaveis + " de " + r.cargos.length;
+    el("t-cargos-pe").textContent = "com pelo menos " + MIN_GRUPO + " pessoas de cada grupo";
+    el("t-seg").textContent = r.segregados;
+
+    desenhaDumbbell(r);
+    montaTabela(r);
+    montaPlano(r);
+    montaRelatorio(r);
+  }
+
+  function desenhaDumbbell(r){
+    var s = el("dumbbell"); while(s.firstChild) s.removeChild(s.firstChild);
+    var itens = r.cargos.filter(function(c){ return c.medRef!=null || c.medCmp!=null; });
+    var W=900, esq=190, dir=150, topo=8, passo=30, H=topo+passo*itens.length+10;
+    s.setAttribute("viewBox","0 0 "+W+" "+H);
+    var vmax = 0; itens.forEach(function(c){ vmax=Math.max(vmax, c.medRef||0, c.medCmp||0); });
+    var x=function(v){ return esq + v/vmax*(W-esq-dir); };
+    [0.25,0.5,0.75,1].forEach(function(f){
+      s.appendChild(svgEl("line",{x1:x(vmax*f),y1:topo,x2:x(vmax*f),y2:H-10,stroke:LINHA,"stroke-width":1}));
+      txt(s,x(vmax*f),H-1,brl(vmax*f),{"text-anchor":"middle","font-size":"10","fill":T60,"font-family":"inherit"});
+    });
+    itens.forEach(function(c,i){
+      var cy = topo+passo*i+passo/2;
+      txt(s,esq-12,cy+4,c.cargo.length>26?c.cargo.slice(0,25)+"…":c.cargo,{"text-anchor":"end","font-size":"12","font-weight":"600","fill":TINTA,"font-family":"inherit"});
+      if(c.medRef!=null && c.medCmp!=null){
+        s.appendChild(svgEl("line",{x1:x(c.medCmp),y1:cy,x2:x(c.medRef),y2:cy,stroke:c.ok&&c.gap>=15?TIJOLO:LINHA,"stroke-width":c.ok?3:2,"stroke-linecap":"round"}));
+      }
+      if(c.medRef!=null) s.appendChild(svgEl("circle",{cx:x(c.medRef),cy:cy,r:6,fill:PINHO,stroke:"#fff","stroke-width":1.5,opacity:c.nRef>=MIN_GRUPO?1:0.35}));
+      if(c.medCmp!=null) s.appendChild(svgEl("circle",{cx:x(c.medCmp),cy:cy,r:6,fill:COBALTO,stroke:"#fff","stroke-width":1.5,opacity:c.nCmp>=MIN_GRUPO?1:0.35}));
+      var rot = c.ok ? pct(c.gap) : (c.semCmp ? "sem " + r.R.nomeCmp : c.semRef ? "sem " + r.R.nomeRef : "poucos casos");
+      var xr = Math.max(c.medRef||0, c.medCmp||0);
+      txt(s,x(xr)+12,cy+4,rot,{"font-size":"11.5","font-weight":"700","fill":c.ok?(c.gap>=15?TIJOLO:(c.gap>=5?"#7a5410":"#2e7d5b")):T60,"font-family":"inherit","font-variant-numeric":"tabular-nums"});
+    });
+  }
+
+  function montaTabela(r){
+    var tb = el("tab-cargos"); tb.innerHTML="";
+    r.cargos.forEach(function(c){
+      var tr=document.createElement("tr"), k=classeGap(c.ok?c.gap:null);
+      var barra = c.ok && c.gap>0 ? '<span class="mini-gap"><i style="width:'+Math.min(100,c.gap/40*100).toFixed(0)+'%"></i></span>' : '<span class="mini-gap"></span>';
+      tr.innerHTML = '<td class="esq">'+c.cargo+'<div style="font-size:11px;color:var(--tinta-60);font-weight:400">'+c.nRef+' '+r.R.nomeRef+' · '+c.nCmp+' '+r.R.nomeCmp+'</div></td>'+
+        '<td class="d">'+(c.medRef!=null&&c.nRef>=MIN_GRUPO?brl(c.medRef):"·")+'</td>'+
+        '<td class="d">'+(c.medCmp!=null&&c.nCmp>=MIN_GRUPO?brl(c.medCmp):"·")+'</td>'+
+        '<td class="d">'+barra+(c.ok?pct(c.gap):"·")+'</td>'+
+        '<td><span class="pill '+k+'">'+(c.ok?leituraGap(c.gap):(c.semCmp?"sem "+r.R.nomeCmp:c.semRef?"sem "+r.R.nomeRef:"poucos casos"))+'</span></td>'+
+        '<td class="d">'+(c.ok&&c.custo>0?brl(c.custo):"·")+'</td>';
+      tb.appendChild(tr);
+    });
+  }
+
+  function montaPlano(r){
+    var ol = el("plano"); ol.innerHTML="";
+    var itens = [];
+    var criticos = r.cargos.filter(function(c){ return c.ok && c.gap>=15; }).sort(function(a,b){ return b.custo-a.custo; });
+    var atencao = r.cargos.filter(function(c){ return c.ok && c.gap>=5 && c.gap<15; });
+    var seg = r.cargos.filter(function(c){ return c.semCmp; });
+    criticos.slice(0,3).forEach(function(c){
+      itens.push("<b>Revisar " + c.cargo + " agora.</b> Gap de " + pct(c.gap) + " entre " + c.nCmp + " " + r.R.nomeCmp + " e " + c.nRef + " " + r.R.nomeRef + ". Equiparar pela mediana da referência custa " + brl(c.custo) + " por mês. Comece conferindo se os critérios de nível e tempo de casa explicam a diferença, e documente.");
+    });
+    if(atencao.length) itens.push("<b>Acompanhar " + atencao.map(function(c){return c.cargo;}).join(", ") + ".</b> Gap entre 5% e 15%. Fixar critérios objetivos de progressão e revisar na próxima rodada de mérito.");
+    if(seg.length) itens.push("<b>Abrir acesso em " + seg.map(function(c){return c.cargo;}).join(", ") + ".</b> Não há " + r.R.nomeCmp + " nesses cargos. Aqui a desigualdade é de porta de entrada, e o gap total só cai quando a distribuição entre cargos muda: metas de seleção e promoção, não só de salário.");
+    if(r.gapDentro!=null && PNAD[st.recorte].dentro!=null && r.gapDentro>PNAD[st.recorte].dentro) itens.push("<b>Registrar no relatório de transparência</b> que o gap dentro do cargo (" + pct(r.gapDentro) + ") supera a referência de mercado do modelo (" + pct(PNAD[st.recorte].dentro) + "), com o plano acima como medida de mitigação, metas e prazos.");
+    if(!itens.length) itens.push("<b>Manter.</b> Nenhum cargo com gap acima de 5% entre grupos comparáveis. Publicar o resultado e repetir a auditoria a cada semestre.");
+    itens.forEach(function(t,i){ var li=document.createElement("li"); li.innerHTML='<span class="p">'+(i+1)+'</span><span>'+t+'</span>'; ol.appendChild(li); });
+  }
+
+  function montaRelatorio(r){
+    var R=r.R, P=PNAD[st.recorte], L=[];
+    L.push("AUDITORIA DE PARIDADE SALARIAL, recorte " + ({genero:"gênero",raca:"raça",inter:"interseccional"}[st.recorte]) + (st.base==="40h"?", salário equivalente a 40h":""));
+    L.push("Folha: " + st.dados.linhas.length + " pessoas, " + r.cargos.length + " postos (" + (st.temNivel && st.agrupa==="cargo_nivel" ? "cargo e nível" : "cargo") + "), " + r.comparaveis + " com grupos comparáveis (mínimo " + MIN_GRUPO + " por lado).");
+    if(r.gapTotal!=null) L.push("Gap total: " + pct(r.gapTotal) + " (mediana de " + R.nomeCmp + " " + brl(r.medCmp) + " contra " + brl(r.medRef) + " de " + R.nomeRef + ").");
+    if(r.gapDentro!=null) L.push("Gap dentro do cargo: " + pct(r.gapDentro) + ". Parcela pela distribuição entre cargos: " + pct(r.gapTotal-r.gapDentro) + ".");
+    if(r.comparaveis) L.push("Custo de equiparação pela mediana da referência no mesmo cargo: " + brl(r.custoTotal) + " por mês, " + brl(r.custoTotal*12) + " por ano, " + r.afetadas + " pessoas.");
+    L.push("Referência de mercado (PNAD Contínua 2022, modelo do TCC Grupo 1, Turma Fly): " + (P.dentro!=null?"gap no mesmo posto " + pct(P.dentro) + "; ":"") + "gap total " + pct(P.total) + ".");
+    L.push("");
+    L.push("Por cargo (referência | comparado | gap | custo mensal):");
+    r.cargos.forEach(function(c){ L.push("  " + c.cargo + ": " + (c.ok ? brl(c.medRef) + " | " + brl(c.medCmp) + " | " + pct(c.gap) + " | " + brl(c.custo) : (c.semCmp ? "sem " + R.nomeCmp : "poucos casos"))); });
+    L.push("");
+    L.push("Aviso: protótipo acadêmico. Diferenças estatísticas entre grupos, não avaliação individual. O benchmark descreve a desigualdade existente nos dados e não estabelece causalidade.");
+    el("relatorio").textContent = L.join("\n");
+  }
+
+  /* ---------- entrada ---------- */
+  function mostraCampos(d){
+    var box = el("campos"); box.innerHTML="";
+    [["cargo","Cargo"],["genero","Gênero"],["raca","Raça ou cor"],["salario","Salário"],["nivel","Nível (opcional)"],["jornada","Jornada (opcional)"]].forEach(function(p){
+      var i = d.mapa[p[0]], div=document.createElement("div"); div.className="campo"+(i<0&&["nivel","jornada"].indexOf(p[0])<0?" falta":"");
+      div.innerHTML='<span class="rotulo">'+p[1]+'</span><b>'+(i>=0?d.cols[i]:"não encontrada")+'</b>';
+      box.appendChild(div);
+    });
+  }
+  function analisar(texto){
+    el("erro").hidden = true;
+    try{
+      var d = parseCSV(texto);
+      st.dados = d; st.temJornada = d.temJornada; st.temNivel = d.temNivel;
+      if(!d.temJornada) st.base="mensal";
+      mostraCampos(d);
+      render();
+      el("resultados").scrollIntoView({behavior:"smooth",block:"start"});
+    }catch(e){
+      el("erro").hidden=false; el("erro").textContent = e.message;
+      el("resultados").hidden = true; el("campos").innerHTML="";
+    }
+  }
+
+  el("btn-analisar").addEventListener("click", function(){ analisar(el("entrada").value); });
+  el("btn-exemplo").addEventListener("click", function(){ el("entrada").value = FOLHA_EXEMPLO; analisar(FOLHA_EXEMPLO); });
+  el("arq").addEventListener("change", function(ev){
+    var f = ev.target.files && ev.target.files[0]; if(!f) return;
+    var rd = new FileReader(); rd.onload=function(){ el("entrada").value = String(rd.result); analisar(String(rd.result)); }; rd.readAsText(f, "utf-8");
+  });
+  Array.prototype.forEach.call(document.querySelectorAll("#seg-recorte button"), function(b){
+    b.addEventListener("click", function(){
+      st.recorte = b.dataset.r;
+      Array.prototype.forEach.call(document.querySelectorAll("#seg-recorte button"), function(x){ x.setAttribute("aria-pressed", String(x===b)); });
+      if(st.dados) render();
+    });
+  });
+  Array.prototype.forEach.call(document.querySelectorAll("#seg-nivel button"), function(b){
+    b.addEventListener("click", function(){
+      st.agrupa = b.dataset.n;
+      Array.prototype.forEach.call(document.querySelectorAll("#seg-nivel button"), function(x){ x.setAttribute("aria-pressed", String(x===b)); });
+      if(st.dados) render();
+    });
+  });
+  Array.prototype.forEach.call(document.querySelectorAll("#seg-base button"), function(b){
+    b.addEventListener("click", function(){
+      st.base = b.dataset.b;
+      Array.prototype.forEach.call(document.querySelectorAll("#seg-base button"), function(x){ x.setAttribute("aria-pressed", String(x===b)); });
+      if(st.dados) render();
+    });
+  });
+  el("btn-copiar").addEventListener("click", function(){
+    var t = el("relatorio").textContent;
+    function feito(){ el("ok-copiado").hidden=false; setTimeout(function(){ el("ok-copiado").hidden=true; },2200); }
+    if(navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(t).then(feito,feito);
+    else { var ta=document.createElement("textarea"); ta.value=t; document.body.appendChild(ta); ta.select(); try{document.execCommand("copy");}catch(e){} document.body.removeChild(ta); feito(); }
+  });
+
+  /* a página abre já com a folha de exemplo analisada, para mostrar o que faz */
+  el("entrada").value = FOLHA_EXEMPLO;
+  analisar(FOLHA_EXEMPLO);
+  window.scrollTo(0,0);
+})();
+</script>
