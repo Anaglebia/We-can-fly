@@ -46,8 +46,6 @@ Este simulador interativo expõe o viés salarial do mercado ao demonstrar visua
 
 Ana Bezerra - [LinkedIn](https://www.linkedin.com/in/ana-almeida-ti/)
 
-Isadora de Oliveira Silva - [LinkedIn](https://www.linkedin.com/in/isadora-de-oliveira-silva-496954164)
-
 Jaqueline Martins Duarte - [LinkedIn](https://www.linkedin.com/in/jaquilenemartins)
 
 Bernardo Chiusoli - [LinkedIn](https://www.linkedin.com/in/bernardochiusoli)
