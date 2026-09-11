@@ -132,6 +132,7 @@
     margin-top:28px;background:var(--tinta);color:var(--papel);border:none;
     padding:14px 26px;border-radius:2px;font-size:0.95rem;font-family:'Inter',sans-serif;
     font-weight:600;cursor:pointer;
+    margin-left: 108px;
   }
   #btn-comparar:hover{background:#000;}
 
@@ -206,6 +207,24 @@
     font-size:0.84rem;color:#6B5320;
   }
   .aviso-n[hidden]{display:none !important;}
+
+    .btn-auditor {
+      margin-top:28px;background:var(--tinta);color:var(--papel);border:none;
+    padding:14px 26px;border-radius:2px;font-size:0.95rem;font-family:'Inter',sans-serif;
+    font-weight:600;cursor:pointer;
+        /* display: inline-block;
+        padding: 12px 24px;
+        background-color: #007bff;
+        color: white;
+        text-decoration: none;
+        border-radius: 8px;
+        font-weight: bold;
+        cursor: pointer; */
+    }
+
+    .btn-auditor:hover {
+        background-color: #0056b3;
+    }
 </style>
 
 </head>
@@ -363,6 +382,8 @@
       </div>
 
       <button id="btn-comparar">Comparar rendas previstas</button>
+      <button  onclick="window.location.href='auditor-de-paridade.html'" id="btn-comparar">Auditor de Paridade</button>
+  
 
       <div class="resultado" id="resultado" hidden>
         <div class="resultado-rendas">
