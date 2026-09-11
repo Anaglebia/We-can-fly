@@ -20,9 +20,9 @@ A ideia original do grupo era ir além do recorte binário e investigar como a r
 - Como reproduzir: [ver dados/FONTE.md]
 
 ## O metodo
-1. **Limpeza:** Tratamento de valores ausentes (NAs) e padronização das categorias de raça/cor e sexo.
-2. **Variáveis:** Definição do rendimento mensal como variável dependente, e sexo, raça e contribuição previdenciária como independentes.
-3. **Modelo:** Utilização de [inserir o modelo, ex: Regressão Linear Múltipla].
+1. **Limpeza:** Exclusão dos registros sem renda salarial declarada (VD4020 nulo ou zero) e restrição a pessoas de 16 anos ou mais;.
+2. **Variáveis:** sexo (V2007), raça/cor (V2010), idade (V2009), escolaridade (VD3004) e UF — códigos do IBGE traduzidos para texto.
+3. **Modelo:**imputação pela mediana e padronização das numéricas (idade eescolaridade) e One-Hot nas categóricas, tudo dentro de um Pipeline doscikit-learn, Regressão Linear Múltipla].
 4. **Justificativa:** Escolha feita por permitir isolar o impacto de cada característica demográfica no rendimento e medir a desigualdade salarial.
 
 ## Os resultados
